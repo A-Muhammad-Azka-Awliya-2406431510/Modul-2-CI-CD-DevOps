@@ -1,8 +1,11 @@
 ## Refleksi (Module 1 - Coding Standards)
+<<<<<<< HEAD
 ### A - 2406431510 - Muhammad Azka Awliya
 
 <details>
   <summary><strong>Refleksi 1 (Clean Code, Git Flow, Secure Coding)</strong></summary>
+=======
+>>>>>>> bf8f33b (Readme Refleksi 1)
 
 Bagian ini adalah refleksi saya setelah mengecek ulang source code dan menilai penerapan standar dari modul.
 
@@ -36,6 +39,7 @@ Mengacu pada kategori praktik secure coding di modul (Authentication, Authorizat
 **Yang perlu saya perbaiki**
 - Saya akan mengganti operasi hapus menjadi non-GET + proteksi CSRF.
 - Saya akan menambahkan pembatasan/normalisasi input (trimming nama, batas panjang, dan tipe angka).
+<<<<<<< HEAD
 </details>
 
 <details>
@@ -66,3 +70,5 @@ Perbaikan yang saya lakukan:
 Dengan pendekatan itu, kode lebih bersih, mengikuti prinsip **DRY**, namun tetap mudah dipahami.
 
 </details>
+=======
+>>>>>>> bf8f33b (Readme Refleksi 1)
