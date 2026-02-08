@@ -6,7 +6,6 @@ import org.springframework.stereotype.Repository;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Objects;
 import java.util.UUID;
 
 @Repository
@@ -14,11 +13,10 @@ public class ProductRepository {
     private final List<Product> productData = new ArrayList<>();
 
     public Product create(Product product) {
-        Objects.requireNonNull(product, "product must not be null");
-
-        assignProductIdIfMissing(product);
+        if (product.getProductId() == null || product.getProductId().isBlank()) {
+            product.setProductId(UUID.randomUUID().toString());
+        }
         productData.add(product);
-
         return product;
     }
 
@@ -27,22 +25,45 @@ public class ProductRepository {
     }
 
     public boolean delete(String id) {
-        return productData.removeIf(p -> p.getProductId().equals(id));
-    }
-
-    private void assignProductIdIfMissing(Product product) {
-        if (hasProductId(product)) {
-            return;
+        if (id == null || id.isBlank()) {
+            return false;
         }
-        product.setProductId(generateProductId());
+        return productData.removeIf(p -> id.equals(p.getProductId()));
     }
 
-    private boolean hasProductId(Product product) {
-        String productId = product.getProductId();
-        return productId != null && !productId.isBlank();
+    public Product findById(String id) {
+        if (id == null || id.isBlank()) {
+            return null;
+        }
+
+        return productData.stream()
+                .filter(p -> id.equals(p.getProductId()))
+                .findFirst()
+                .orElse(null);
     }
 
-    private String generateProductId() {
-        return UUID.randomUUID().toString();
+    public boolean update(Product updated) {
+        if (!isValidForUpdate(updated)) {
+            return false;
+        }
+
+        for (Product current : productData) {
+            if (updated.getProductId().equals(current.getProductId())) {
+                applyUpdates(current, updated);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private boolean isValidForUpdate(Product product) {
+        return product != null
+                && product.getProductId() != null
+                && !product.getProductId().isBlank();
+    }
+
+    private void applyUpdates(Product target, Product source) {
+        target.setProductName(source.getProductName());
+        target.setProductQuantity(source.getProductQuantity());
     }
 }
