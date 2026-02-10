@@ -10,7 +10,7 @@ import java.util.UUID;
 
 @Repository
 public class ProductRepository {
-    private List<Product> productData = new ArrayList<>();
+    private final List<Product> productData = new ArrayList<>();
 
     public Product create(Product product) {
         if (product.getProductId() == null || product.getProductId().isBlank()) {
@@ -24,8 +24,17 @@ public class ProductRepository {
         return productData.iterator();
     }
 
+    public boolean delete(String id) {
+        if (id == null || id.isBlank()) {
+            return false;
+        }
+        return productData.removeIf(p -> id.equals(p.getProductId()));
+    }
+
     public Product findById(String id) {
-        if (id == null || id.isBlank()) return null;
+        if (id == null || id.isBlank()) {
+            return null;
+        }
 
         return productData.stream()
                 .filter(p -> id.equals(p.getProductId()))
@@ -33,22 +42,11 @@ public class ProductRepository {
                 .orElse(null);
     }
 
-
     public boolean update(Product updated) {
         if (!isValidForUpdate(updated)) {
             return false;
         }
 
-        return updateIfExists(updated);
-    }
-
-    private boolean isValidForUpdate(Product product) {
-        return product != null
-                && product.getProductId() != null
-                && !product.getProductId().isBlank();
-    }
-
-    private boolean updateIfExists(Product updated) {
         for (Product current : productData) {
             if (updated.getProductId().equals(current.getProductId())) {
                 applyUpdates(current, updated);
@@ -58,9 +56,14 @@ public class ProductRepository {
         return false;
     }
 
+    private boolean isValidForUpdate(Product product) {
+        return product != null
+                && product.getProductId() != null
+                && !product.getProductId().isBlank();
+    }
+
     private void applyUpdates(Product target, Product source) {
         target.setProductName(source.getProductName());
         target.setProductQuantity(source.getProductQuantity());
     }
-
 }
