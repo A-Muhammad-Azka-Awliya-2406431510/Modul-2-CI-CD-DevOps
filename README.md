@@ -1,4 +1,8 @@
 ## Refleksi (Module 1 - Coding Standards)
+### A - 2406431510 - Muhammad Azka Awliya
+
+<details>
+  <summary><strong>Refleksi 1 (Clean Code, Git Flow, Secure Coding)</strong></summary>
 
 Bagian ini adalah refleksi saya setelah mengecek ulang source code dan menilai penerapan standar dari modul.
 
@@ -32,3 +36,33 @@ Mengacu pada kategori praktik secure coding di modul (Authentication, Authorizat
 **Yang perlu saya perbaiki**
 - Saya akan mengganti operasi hapus menjadi non-GET + proteksi CSRF.
 - Saya akan menambahkan pembatasan/normalisasi input (trimming nama, batas panjang, dan tipe angka).
+</details>
+
+<details>
+  <summary><strong>Refleksi 2 (Unit Test & Functional Test)</strong></summary>
+
+### 1) Setelah menulis unit test
+
+Menulis unit test membantu saya lebih yakin bahwa fitur **edit** dan **delete** bekerja pada kasus baik positif maupun negatif. Dalam implementasi saya, unit test memeriksa:
+- edit berhasil saat `productId` valid
+- edit gagal untuk input `null`, `id` kosong, atau id tidak ditemukan
+- delete berhasil untuk id valid dan gagal untuk id kosong/tidak ada
+
+Saya memilih sebanyak yang dibutuhkan untuk mencakup jalur utama dan jalur gagal yang penting. Untuk memastikan cukup, biasanya saya mengandalkan coverage dan peninjauan kasus. Pada implementasi ini, laporan JaCoCo menunjukkan **instruction coverage ~95%** dan **branch coverage ~73%**.  
+Dalam mengerjakan unit test modul ini, saya merasa coverage hanya menunjukkan *kode tersentuh*, bukan *semua kasus logika terpikir*.
+
+### 2) Membuat functional test suite baru yang mirip
+
+Potensi isu clean code:
+- **Duplikasi setup** (konfigurasi WebDriver, base URL, timeout, helper).
+- **Duplikasi selector** dan data uji.
+- **Class menjadi panjang** dan sulit dirawat jika semua langkah UI ditulis ulang.
+
+Perbaikan yang saya lakukan:
+- Mengekstrak setup bersama ke **base test class** atau **utility** (konfigurasi driver, `buildBaseUrl`, helper wait).
+- Menggunakan **Page Object** atau helper terstruktur untuk halaman (create/edit/list) agar test lebih mudah dipahami.
+- Menggunakan **test data builder** untuk data produk agar konsisten dan mudah diubah.
+
+Dengan pendekatan itu, kode lebih bersih, mengikuti prinsip **DRY**, namun tetap mudah dipahami.
+
+</details>
