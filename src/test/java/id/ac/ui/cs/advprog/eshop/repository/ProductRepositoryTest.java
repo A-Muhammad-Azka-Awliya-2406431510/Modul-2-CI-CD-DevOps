@@ -34,6 +34,28 @@ class ProductRepositoryTest {
     }
 
     @Test
+    void testCreateAssignsIdWhenNull() {
+        Product product = buildProduct(null, PRODUCT_NAME, PRODUCT_QUANTITY);
+
+        Product savedProduct = productRepository.create(product);
+
+        assertNotNull(savedProduct.getProductId());
+        assertFalse(savedProduct.getProductId().isBlank());
+        assertEquals(PRODUCT_NAME, savedProduct.getProductName());
+        assertEquals(PRODUCT_QUANTITY, savedProduct.getProductQuantity());
+    }
+
+    @Test
+    void testCreateAssignsIdWhenBlank() {
+        Product product = buildProduct(" ", PRODUCT_NAME, PRODUCT_QUANTITY);
+
+        Product savedProduct = productRepository.create(product);
+
+        assertNotNull(savedProduct.getProductId());
+        assertFalse(savedProduct.getProductId().isBlank());
+    }
+
+    @Test
     void testFindAllIfEmpty() {
         Iterator<Product> productIterator = productRepository.findAll();
         assertFalse(productIterator.hasNext());
@@ -53,6 +75,45 @@ class ProductRepositoryTest {
         assertEquals(product2.getProductName(), savedProduct.getProductName());
         assertEquals(product2.getProductQuantity(), savedProduct.getProductQuantity());
         assertFalse(productIterator.hasNext());
+    }
+
+    @Test
+    void testFindByIdReturnsProductWhenIdExists() {
+        createAndSaveProduct(PRODUCT_ID, PRODUCT_NAME, PRODUCT_QUANTITY);
+
+        Product found = productRepository.findById(PRODUCT_ID);
+
+        assertNotNull(found);
+        assertEquals(PRODUCT_ID, found.getProductId());
+        assertEquals(PRODUCT_NAME, found.getProductName());
+        assertEquals(PRODUCT_QUANTITY, found.getProductQuantity());
+    }
+
+    @Test
+    void testFindByIdReturnsNullForMissingId() {
+        createAndSaveProduct(PRODUCT_ID, PRODUCT_NAME, PRODUCT_QUANTITY);
+
+        Product found = productRepository.findById(OTHER_PRODUCT_ID);
+
+        assertNull(found);
+    }
+
+    @Test
+    void testFindByIdReturnsNullForBlankId() {
+        createAndSaveProduct(PRODUCT_ID, PRODUCT_NAME, PRODUCT_QUANTITY);
+
+        Product found = productRepository.findById(" ");
+
+        assertNull(found);
+    }
+
+    @Test
+    void testFindByIdReturnsNullForNullId() {
+        createAndSaveProduct(PRODUCT_ID, PRODUCT_NAME, PRODUCT_QUANTITY);
+
+        Product found = productRepository.findById(null);
+
+        assertNull(found);
     }
 
     @Test
@@ -80,6 +141,16 @@ class ProductRepositoryTest {
         createAndSaveProduct(PRODUCT_ID, PRODUCT_NAME, PRODUCT_QUANTITY);
 
         boolean deleted = productRepository.delete(" ");
+
+        assertFalse(deleted);
+        assertNotNull(productRepository.findById(PRODUCT_ID));
+    }
+
+    @Test
+    void testDeleteReturnsFalseForNullId() {
+        createAndSaveProduct(PRODUCT_ID, PRODUCT_NAME, PRODUCT_QUANTITY);
+
+        boolean deleted = productRepository.delete(null);
 
         assertFalse(deleted);
         assertNotNull(productRepository.findById(PRODUCT_ID));
@@ -116,12 +187,35 @@ class ProductRepositoryTest {
     }
 
     @Test
+    void testUpdateReturnsFalseForNullId() {
+        Product updated = buildProduct(null, OTHER_PRODUCT_NAME, OTHER_PRODUCT_QUANTITY);
+
+        boolean updatedResult = productRepository.update(updated);
+
+        assertFalse(updatedResult);
+    }
+
+    @Test
     void testUpdateReturnsFalseWhenIdNotFound() {
         Product updated = buildProduct(OTHER_PRODUCT_ID, OTHER_PRODUCT_NAME, OTHER_PRODUCT_QUANTITY);
 
         boolean updatedResult = productRepository.update(updated);
 
         assertFalse(updatedResult);
+    }
+
+    @Test
+    void testUpdateReturnsFalseWhenIdNotFoundWithExistingData() {
+        createAndSaveProduct(PRODUCT_ID, PRODUCT_NAME, PRODUCT_QUANTITY);
+        Product updated = buildProduct(OTHER_PRODUCT_ID, OTHER_PRODUCT_NAME, OTHER_PRODUCT_QUANTITY);
+
+        boolean updatedResult = productRepository.update(updated);
+
+        assertFalse(updatedResult);
+        Product existing = productRepository.findById(PRODUCT_ID);
+        assertNotNull(existing);
+        assertEquals(PRODUCT_NAME, existing.getProductName());
+        assertEquals(PRODUCT_QUANTITY, existing.getProductQuantity());
     }
 
     private Product createAndSaveProduct(String id, String name, int quantity) {
