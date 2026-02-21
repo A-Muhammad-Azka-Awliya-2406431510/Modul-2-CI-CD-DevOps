@@ -26,6 +26,9 @@ class ProductControllerTest {
     private static final String PRODUCT_ID = "id-1";
     private static final String PRODUCT_NAME = "Tea";
     private static final int PRODUCT_QUANTITY = 5;
+    private static final String REDIRECT_PRODUCT_LIST = "/product/list";
+    private static final String SUGAR = "Sugar";
+    private static final String MISSING = "missing";
 
     private MockMvc mockMvc;
     private ProductService productService;
@@ -53,7 +56,7 @@ class ProductControllerTest {
                         .param("productName", PRODUCT_NAME)
                         .param("productQuantity", String.valueOf(PRODUCT_QUANTITY)))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/product/list"));
+                .andExpect(redirectedUrl(REDIRECT_PRODUCT_LIST));
 
         ArgumentCaptor<Product> captor = ArgumentCaptor.forClass(Product.class);
         Mockito.verify(productService).create(captor.capture());
@@ -67,7 +70,7 @@ class ProductControllerTest {
     void createProductPostUsesDefaultBoundValuesWhenFieldsMissing() throws Exception {
         mockMvc.perform(post("/product/create"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/product/list"));
+                .andExpect(redirectedUrl(REDIRECT_PRODUCT_LIST));
 
         ArgumentCaptor<Product> captor = ArgumentCaptor.forClass(Product.class);
         Mockito.verify(productService).create(captor.capture());
@@ -107,7 +110,7 @@ class ProductControllerTest {
     void deleteProductDelegatesToServiceAndRedirects() throws Exception {
         mockMvc.perform(get("/product/delete/{id}", PRODUCT_ID))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/product/list"));
+                .andExpect(redirectedUrl(REDIRECT_PRODUCT_LIST));
 
         Mockito.verify(productService).delete(PRODUCT_ID);
     }
@@ -128,29 +131,29 @@ class ProductControllerTest {
 
     @Test
     void editProductPageRedirectsWhenProductMissing() throws Exception {
-        Mockito.when(productService.findById("missing")).thenReturn(null);
+        Mockito.when(productService.findById(MISSING)).thenReturn(null);
 
-        mockMvc.perform(get("/product/edit/missing"))
+        mockMvc.perform(get("/product/edit/" + MISSING))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/product/list"));
+                .andExpect(redirectedUrl(REDIRECT_PRODUCT_LIST));
 
-        Mockito.verify(productService).findById("missing");
+        Mockito.verify(productService).findById(MISSING);
     }
 
     @Test
     void editProductPostDelegatesToServiceAndRedirects() throws Exception {
         mockMvc.perform(post("/product/edit")
                         .param("productId", PRODUCT_ID)
-                        .param("productName", "Sugar")
+                        .param("productName", SUGAR)
                         .param("productQuantity", "3"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/product/list"));
+                .andExpect(redirectedUrl(REDIRECT_PRODUCT_LIST));
 
         ArgumentCaptor<Product> captor = ArgumentCaptor.forClass(Product.class);
         Mockito.verify(productService).update(captor.capture());
         Product product = captor.getValue();
         assertEquals(PRODUCT_ID, product.getProductId());
-        assertEquals("Sugar", product.getProductName());
+        assertEquals(SUGAR, product.getProductName());
         assertEquals(3, product.getProductQuantity());
     }
 
@@ -158,16 +161,16 @@ class ProductControllerTest {
     void editProductPostPassesNegativeQuantityToService() throws Exception {
         mockMvc.perform(post("/product/edit")
                         .param("productId", PRODUCT_ID)
-                        .param("productName", "Sugar")
+                        .param("productName", SUGAR)
                         .param("productQuantity", "-1"))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/product/list"));
+                .andExpect(redirectedUrl(REDIRECT_PRODUCT_LIST));
 
         ArgumentCaptor<Product> captor = ArgumentCaptor.forClass(Product.class);
         Mockito.verify(productService).update(captor.capture());
         Product product = captor.getValue();
         assertEquals(PRODUCT_ID, product.getProductId());
-        assertEquals("Sugar", product.getProductName());
+        assertEquals(SUGAR, product.getProductName());
         assertEquals(-1, product.getProductQuantity());
     }
 }

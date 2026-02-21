@@ -13,6 +13,12 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ProductServiceImplTest {
+    private static final String ID_ONE = "id-1";
+    private static final String ID_TWO = "id-2";
+    private static final String TEA = "Tea";
+    private static final String COFFEE = "Coffee";
+    private static final String MISSING = "missing";
+
     private ProductRepository productRepository;
     private ProductServiceImpl productService;
 
@@ -25,7 +31,7 @@ class ProductServiceImplTest {
 
     @Test
     void createDelegatesToRepository() {
-        Product product = buildProduct("id-1", "Tea", 5);
+        Product product = buildProduct(ID_ONE, TEA, 5);
         Mockito.when(productRepository.create(product)).thenReturn(product);
 
         Product created = productService.create(product);
@@ -36,8 +42,8 @@ class ProductServiceImplTest {
 
     @Test
     void findAllReturnsAllProductsFromIterator() {
-        Product product1 = buildProduct("id-1", "Tea", 5);
-        Product product2 = buildProduct("id-2", "Coffee", 7);
+        Product product1 = buildProduct(ID_ONE, TEA, 5);
+        Product product2 = buildProduct(ID_TWO, COFFEE, 7);
         Mockito.when(productRepository.findAll()).thenReturn(List.of(product1, product2).iterator());
 
         List<Product> products = productService.findAll();
@@ -62,48 +68,48 @@ class ProductServiceImplTest {
 
     @Test
     void deleteReturnsTrueWhenRepositoryDeletesData() {
-        Mockito.when(productRepository.delete("id-1")).thenReturn(true);
+        Mockito.when(productRepository.delete(ID_ONE)).thenReturn(true);
 
-        boolean deleted = productService.delete("id-1");
+        boolean deleted = productService.delete(ID_ONE);
 
         assertTrue(deleted);
-        Mockito.verify(productRepository).delete("id-1");
+        Mockito.verify(productRepository).delete(ID_ONE);
     }
 
     @Test
     void deleteReturnsFalseWhenRepositoryDoesNotDeleteData() {
-        Mockito.when(productRepository.delete("missing")).thenReturn(false);
+        Mockito.when(productRepository.delete(MISSING)).thenReturn(false);
 
-        boolean deleted = productService.delete("missing");
+        boolean deleted = productService.delete(MISSING);
 
         assertFalse(deleted);
-        Mockito.verify(productRepository).delete("missing");
+        Mockito.verify(productRepository).delete(MISSING);
     }
 
     @Test
     void findByIdReturnsProductWhenRepositoryFindsData() {
-        Product product = buildProduct("id-1", "Tea", 5);
-        Mockito.when(productRepository.findById("id-1")).thenReturn(product);
+        Product product = buildProduct(ID_ONE, TEA, 5);
+        Mockito.when(productRepository.findById(ID_ONE)).thenReturn(product);
 
-        Product found = productService.findById("id-1");
+        Product found = productService.findById(ID_ONE);
 
         assertSame(product, found);
-        Mockito.verify(productRepository).findById("id-1");
+        Mockito.verify(productRepository).findById(ID_ONE);
     }
 
     @Test
     void findByIdReturnsNullWhenRepositoryReturnsNull() {
-        Mockito.when(productRepository.findById("missing")).thenReturn(null);
+        Mockito.when(productRepository.findById(MISSING)).thenReturn(null);
 
-        Product found = productService.findById("missing");
+        Product found = productService.findById(MISSING);
 
         assertNull(found);
-        Mockito.verify(productRepository).findById("missing");
+        Mockito.verify(productRepository).findById(MISSING);
     }
 
     @Test
     void updateReturnsTrueWhenRepositoryUpdatesData() {
-        Product product = buildProduct("id-1", "Tea", 10);
+        Product product = buildProduct(ID_ONE, TEA, 10);
         Mockito.when(productRepository.update(product)).thenReturn(true);
 
         boolean updated = productService.update(product);
@@ -114,7 +120,7 @@ class ProductServiceImplTest {
 
     @Test
     void updateReturnsFalseWhenRepositoryRejectsUpdate() {
-        Product product = buildProduct("missing", "Tea", 10);
+        Product product = buildProduct(MISSING, TEA, 10);
         Mockito.when(productRepository.update(product)).thenReturn(false);
 
         boolean updated = productService.update(product);
