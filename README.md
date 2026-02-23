@@ -1,3 +1,5 @@
+Link Deployment: querulous-lorilyn-a-muhammad-azka-awliya-2406431510-818cd2a4.koyeb.app/
+
 ## Refleksi (Module 1 - Coding Standards)
 ### A - 2406431510 - Muhammad Azka Awliya
 
@@ -66,6 +68,8 @@ Perbaikan yang saya lakukan:
 Dengan pendekatan itu, kode lebih bersih, mengikuti prinsip **DRY**, namun tetap mudah dipahami.
 
 </details>
+
+## Refleksi (Module 2 - CI/CD & DevOps)
 
 <details>
   <summary><strong>Refleksi 3 (CI/CD &amp; DevOps)</strong></summary>
