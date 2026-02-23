@@ -66,3 +66,11 @@ Perbaikan yang saya lakukan:
 Dengan pendekatan itu, kode lebih bersih, mengikuti prinsip **DRY**, namun tetap mudah dipahami.
 
 </details>
+
+<details>
+  <summary><strong>Refleksi 3 (CI/CD &amp; DevOps)</strong></summary>
+
+1) Di exercise modul 2, perbaikan kualitas kode saya datang dari hasil PMD, terutama soal duplikasi string dan modifier yang sebenarnya tidak perlu. Contohnya, string `redirect:/product/list` muncul berkali-kali di `ProductController` dan test, jadi saya jadikan konstanta supaya rapi dan menghindari `AvoidDuplicateLiterals`. Saya juga menghapus modifier `public` di interface `ProductService` karena Java sudah otomatis membuatnya `public`, sehingga tidak ada redundansi yang ditandai sebagai `RedundantModifier`. Pola kerja saya sederhana, seperti menjalankan PMD di GitHub Actions, lihat hasil yang paling sering muncul, lakukan refactor kecil yang aman, lalu cek ulang workflow agar isu benar-benar hilang tanpa mengubah perilaku aplikasi.
+2) Untuk CI, workflow `ci.yml` menjalankan unit test di setiap `push` dan `pull_request`, jadi integrasi selalu dicek otomatis. Untuk CD, workflow `deploy-koyeb.yml` langsung melakukan deploy ke PaaS ketika ada push ke `main` atau `module-2-exercise` menggunakan Dockerfile, sehingga perubahan yang lulus pipeline langsung terpasang. Dengan alur itu ditambah scanning kualitas (PMD/Scorecard), menurut saya implementasinya sudah sejalan dengan definisi Continuous Integration dan Continuous Deployment untuk branch utama.
+
+</details>
