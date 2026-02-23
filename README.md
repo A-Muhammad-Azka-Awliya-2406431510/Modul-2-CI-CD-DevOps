@@ -67,6 +67,8 @@ Dengan pendekatan itu, kode lebih bersih, mengikuti prinsip **DRY**, namun tetap
 
 </details>
 
+## Refleksi (Module 2 - CI/CD & DevOps)
+
 <details>
   <summary><strong>Refleksi 3 (CI/CD &amp; DevOps)</strong></summary>
 
