@@ -78,3 +78,23 @@ Dengan pendekatan itu, kode lebih bersih, mengikuti prinsip **DRY**, namun tetap
 2) Untuk CI, workflow `ci.yml` menjalankan unit test di setiap `push` dan `pull_request`, jadi integrasi selalu dicek otomatis. Untuk CD, workflow `deploy-koyeb.yml` langsung melakukan deploy ke PaaS ketika ada push ke `main` atau `module-2-exercise` menggunakan Dockerfile, sehingga perubahan yang lulus pipeline langsung terpasang. Dengan alur itu ditambah scanning kualitas (PMD/Scorecard), menurut saya implementasinya sudah sejalan dengan definisi Continuous Integration dan Continuous Deployment untuk branch utama.
 
 </details>
+
+## Refleksi (Module 3 - Maintainability & OO Principles)
+
+<details>
+  <summary><strong>Refleksi 4 (Maintainability &amp; OO Principles)</strong></summary>
+
+1) Di exercise modul 3, saya menggunakan tiga prinsip. Ketiga prinsip tersebut saya aplikasikan pada proyek sebagai berikut:
+- **LSP (Liskov Subtitution Principle)** : `CarController` tidak lagi melakukan extends pada `ProController`, sehingga endpoint car tidak diperlakukan sebagai subtype dari endpoint product.
+- **DIP (Dependency Inversion Principle)** : Controllers bergantung pada interface service. Begitu juga services bergantung pada interface repository port dibandingkan dengan repository yang konkrit.
+- **SRP (Single Responsibility Principle)** : Controller, service, dan repository masing-masing hanya berfokus pada task masing-masing domain (misal `CarController` untuk domain `Car`, begitu juga untuk versi domain Product).
+2) Kelebihan yang saya peroleh dengan contoh:
+- **LSP (Liskov Subtitution Principle)** : Meminimalisir terjadinya perubahan behavior routing `Car` karena meng-expose endpoint dan behavior `Product`. Hal ini dilakukan dengan menghapus inheritence. 
+- **DIP (Dependency Inversion Principle)** : Kode menjadi lebih mudah dites dan dilakukan extend. Hal ini dilakukan dengan melakukan inject pada `CarService` dan `ProductService` dengan memanfaatkan interface RepositoryPort.
+- **SRP (Single Responsibility Principle)** : Karena setiap layer berfokus pada satu task atau tanggung jawab, maka akan menjadi lebih aman ketika terjadi perubahan nantinya.
+3) Kekurangan jika tidak diaplikasikan
+- **LSP (Liskov Subtitution Principle)** : Jika `CarController` melakukan inherit pada `ProductController`, akan menyebabkan potensi terjadinya expose endpoint product yang tidak diinginkan. Menyebabkan routing error dan perbaikan bug.
+- **DIP (Dependency Inversion Principle)** : Service akan bergantung pada repository yang konkrit, menyebabkan pergantian storage (seperti mengganti basis data) memerlukan edit pada kode yang ada di service dimanapun.
+- **SRP (Single Responsibility Principle)** : Satu class harus menangani macam kekhawatiran, apalagi jika hanya perubahan kecil.
+
+</details>
