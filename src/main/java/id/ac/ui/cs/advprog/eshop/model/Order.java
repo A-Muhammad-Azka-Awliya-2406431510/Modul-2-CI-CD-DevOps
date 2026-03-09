@@ -10,6 +10,7 @@ import java.util.Set;
 public class Order {
     private static final Set<String> VALID_STATUSES = Set.of(
             "WAITING_PAYMENT",
+            "FAILED",
             "SUCCESS",
             "CANCELLED"
     );
@@ -30,13 +31,9 @@ public class Order {
     }
 
     public Order(String id, List<Product> products, Long orderTime, String author, String status) {
-        validateProducts(products);
-        validateStatus(status);
-        this.id = id;
-        this.products = products;
-        this.orderTime = orderTime;
-        this.author = author;
-        this.status = status;
+        this(id, products, orderTime, author);
+
+        this.setStatus(status);
     }
 
     public void setStatus(String status) {
