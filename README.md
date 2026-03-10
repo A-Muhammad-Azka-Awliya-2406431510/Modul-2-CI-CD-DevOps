@@ -1,4 +1,4 @@
-[Link Deployment](querulous-lorilyn-a-muhammad-azka-awliya-2406431510-818cd2a4.koyeb.app/)
+Link Deployment: querulous-lorilyn-a-muhammad-azka-awliya-2406431510-818cd2a4.koyeb.app/
 
 ## Refleksi (Module 1 - Coding Standards)
 ### A - 2406431510 - Muhammad Azka Awliya
