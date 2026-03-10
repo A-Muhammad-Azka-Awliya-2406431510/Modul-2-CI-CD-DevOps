@@ -128,7 +128,7 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         String value = paymentData.get(key);
-        return value != null && !value.isBlank();
+        return value != null && !value.isEmpty();
     }
 
     private boolean isValidVoucherCode(Map<String, String> paymentData) {
