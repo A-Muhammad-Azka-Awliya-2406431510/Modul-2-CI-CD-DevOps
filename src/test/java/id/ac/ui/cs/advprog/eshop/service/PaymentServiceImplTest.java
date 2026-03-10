@@ -67,7 +67,24 @@ class PaymentServiceImplTest {
         assertNotNull(result.getId());
         assertEquals("VOUCHER_CODE", result.getMethod());
         assertSame(voucherPaymentData, result.getPaymentData());
+        assertEquals(PaymentStatus.SUCCESS.getValue(), result.getStatus());
+        assertEquals(OrderStatus.SUCCESS.getValue(), order.getStatus());
         verify(paymentRepository, times(1)).save(any(Payment.class));
+    }
+
+    @Test
+    void testAddPaymentVoucherInvalidShouldRejectAndFailOrder() {
+        Map<String, String> invalidVoucherPaymentData = new HashMap<>();
+        invalidVoucherPaymentData.put("voucherCode", "ESHOP1234ABC567");
+
+        Payment result = paymentService.addPayment(
+                order,
+                "VOUCHER_CODE",
+                invalidVoucherPaymentData
+        );
+
+        assertEquals(PaymentStatus.REJECTED.getValue(), result.getStatus());
+        assertEquals(OrderStatus.FAILED.getValue(), order.getStatus());
     }
 
     @Test
