@@ -13,7 +13,9 @@
     <h2>Payment Detail</h2>
     <p class="text-muted">Input payment id to see payment detail.</p>
 
-    <form method="get" onsubmit="event.preventDefault();window.location='/payment/detail/'+document.getElementById('paymentIdInput').value;">
+    <form id="paymentDetailSearchForm"
+          method="get"
+          onsubmit="event.preventDefault();window.location='/payment/detail/'+document.getElementById('paymentIdInput').value;">
         <div class="form-group">
             <label for="paymentIdInput">Payment ID</label>
             <input id="paymentIdInput"
@@ -22,8 +24,12 @@
                    class="form-control col-md-6"
                    placeholder="Enter payment id"
                    required>
+            <small class="form-text text-muted">
+                Example: 4f95ebd4-8fb9-4c04-baa3-df0aeb1ed8af
+            </small>
         </div>
         <button type="submit" class="btn btn-primary">Show Detail</button>
+        <a th:href="@{/payment/admin/list}" class="btn btn-secondary">Open Admin List</a>
     </form>
 </div>
 </body>

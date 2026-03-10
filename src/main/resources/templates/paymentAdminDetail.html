@@ -46,6 +46,11 @@
     </div>
 
     <a th:href="@{/payment/admin/list}" class="btn btn-secondary mt-3">Back to List</a>
+    <a class="btn btn-info mt-3"
+       th:if="${payment != null}"
+       th:href="@{/payment/detail/{paymentId}(paymentId=${payment.id})}">
+        Open User Detail
+    </a>
 </div>
 </body>
 </html>

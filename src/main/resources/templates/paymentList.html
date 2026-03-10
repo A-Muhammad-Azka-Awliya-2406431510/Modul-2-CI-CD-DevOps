@@ -11,6 +11,7 @@
 <body>
 <div class="container my-4">
     <h2>Payment List</h2>
+    <a th:href="@{/payment/detail}" class="btn btn-secondary mb-3">Search Payment by ID</a>
 
     <table class="table table-striped table-responsive-md">
         <thead>
@@ -31,8 +32,12 @@
             <td th:text="${payment.status}"></td>
             <td>
                 <a class="btn btn-info btn-sm"
+                   th:href="@{/payment/detail/{paymentId}(paymentId=${payment.id})}">
+                    User Detail
+                </a>
+                <a class="btn btn-primary btn-sm"
                    th:href="@{/payment/admin/detail/{paymentId}(paymentId=${payment.id})}">
-                    Detail
+                    Admin Detail
                 </a>
             </td>
         </tr>

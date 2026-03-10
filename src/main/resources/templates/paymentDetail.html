@@ -12,24 +12,33 @@
 <div class="container my-4">
     <h2>Payment Detail</h2>
 
-    <table class="table table-striped table-responsive-md">
+    <div class="alert alert-warning" th:if="${payment == null}">
+        Payment data is not found.
+    </div>
+
+    <table class="table table-striped table-responsive-md" th:if="${payment != null}">
         <tbody>
         <tr>
             <th>Payment ID</th>
-            <td th:text="${payment != null ? payment.id : '-'}"></td>
+            <td th:text="${payment.id}"></td>
         </tr>
         <tr>
             <th>Method</th>
-            <td th:text="${payment != null ? payment.method : '-'}"></td>
+            <td th:text="${payment.method}"></td>
         </tr>
         <tr>
             <th>Status</th>
-            <td id="paymentStatus" th:text="${payment != null ? payment.status : '-'}"></td>
+            <td id="paymentStatus" th:text="${payment.status}"></td>
         </tr>
         </tbody>
     </table>
 
     <a th:href="@{/payment/detail}" class="btn btn-secondary">Back</a>
+    <a class="btn btn-info"
+       th:if="${payment != null}"
+       th:href="@{/payment/admin/detail/{paymentId}(paymentId=${payment.id})}">
+        Open Admin Detail
+    </a>
 </div>
 </body>
 </html>
