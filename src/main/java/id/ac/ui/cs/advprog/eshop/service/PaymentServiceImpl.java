@@ -19,19 +19,19 @@ public class PaymentServiceImpl implements PaymentService {
     private static final String METHOD_CASH_ON_DELIVERY = "CASH_ON_DELIVERY";
     private static final String METHOD_BANK_TRANSFER = "BANK_TRANSFER";
 
-    @Autowired
-    private PaymentRepository paymentRepository;
+    private final PaymentRepository paymentRepository;
     private final Map<String, Order> orderByPaymentId = new HashMap<>();
+
+    @Autowired
+    public PaymentServiceImpl(PaymentRepository paymentRepository) {
+        this.paymentRepository = paymentRepository;
+    }
 
     @Override
     public Payment addPayment(Order order, String method, Map<String, String> paymentData) {
-        String paymentId = UUID.randomUUID().toString();
-        String initialStatus = resolveInitialStatus(method, paymentData);
-        Payment payment = new Payment(paymentId, method, initialStatus, paymentData);
-
+        Payment payment = createPayment(method, paymentData);
         paymentRepository.save(payment);
         orderByPaymentId.put(payment.getId(), order);
-
         return payment;
     }
 
@@ -39,16 +39,7 @@ public class PaymentServiceImpl implements PaymentService {
     public Payment setStatus(Payment payment, String status) {
         payment.setStatus(status);
         paymentRepository.save(payment);
-
-        Order relatedOrder = orderByPaymentId.get(payment.getId());
-        if (relatedOrder != null) {
-            if (PaymentStatus.SUCCESS.getValue().equals(status)) {
-                relatedOrder.setStatus(OrderStatus.SUCCESS.getValue());
-            } else if (PaymentStatus.REJECTED.getValue().equals(status)) {
-                relatedOrder.setStatus(OrderStatus.FAILED.getValue());
-            }
-        }
-
+        updateRelatedOrderStatus(payment.getId(), status);
         return payment;
     }
 
@@ -62,24 +53,64 @@ public class PaymentServiceImpl implements PaymentService {
         return paymentRepository.findAll();
     }
 
+    private Payment createPayment(String method, Map<String, String> paymentData) {
+        String paymentId = UUID.randomUUID().toString();
+        String initialStatus = resolveInitialStatus(method, paymentData);
+        return new Payment(paymentId, method, initialStatus, paymentData);
+    }
+
+    private void updateRelatedOrderStatus(String paymentId, String paymentStatus) {
+        Order relatedOrder = orderByPaymentId.get(paymentId);
+        if (relatedOrder == null) {
+            return;
+        }
+
+        String orderStatus = mapOrderStatus(paymentStatus);
+        if (orderStatus != null) {
+            relatedOrder.setStatus(orderStatus);
+        }
+    }
+
+    private String mapOrderStatus(String paymentStatus) {
+        if (PaymentStatus.SUCCESS.getValue().equals(paymentStatus)) {
+            return OrderStatus.SUCCESS.getValue();
+        }
+        if (PaymentStatus.REJECTED.getValue().equals(paymentStatus)) {
+            return OrderStatus.FAILED.getValue();
+        }
+        return null;
+    }
+
     private String resolveInitialStatus(String method, Map<String, String> paymentData) {
-        if (METHOD_VOUCHER_CODE.equals(method)) {
-            return isValidVoucherCode(paymentData) ? PaymentStatus.SUCCESS.getValue() : PaymentStatus.REJECTED.getValue();
-        }
+        return switch (method) {
+            case METHOD_VOUCHER_CODE -> resolveVoucherStatus(paymentData);
+            case METHOD_CASH_ON_DELIVERY -> resolveCashOnDeliveryStatus(paymentData);
+            case METHOD_BANK_TRANSFER -> resolveBankTransferStatus(paymentData);
+            default -> PaymentStatus.WAITING_PAYMENT.getValue();
+        };
+    }
 
-        if (METHOD_CASH_ON_DELIVERY.equals(method)) {
-            return hasNonBlankValue(paymentData, "address") && hasNonBlankValue(paymentData, "deliveryFee")
-                    ? PaymentStatus.WAITING_PAYMENT.getValue()
-                    : PaymentStatus.REJECTED.getValue();
-        }
+    private String resolveVoucherStatus(Map<String, String> paymentData) {
+        return isValidVoucherCode(paymentData)
+                ? PaymentStatus.SUCCESS.getValue()
+                : PaymentStatus.REJECTED.getValue();
+    }
 
-        if (METHOD_BANK_TRANSFER.equals(method)) {
-            return hasNonBlankValue(paymentData, "bankName") && hasNonBlankValue(paymentData, "referenceCode")
-                    ? PaymentStatus.WAITING_PAYMENT.getValue()
-                    : PaymentStatus.REJECTED.getValue();
-        }
+    private String resolveCashOnDeliveryStatus(Map<String, String> paymentData) {
+        return isComplete(paymentData, "address", "deliveryFee")
+                ? PaymentStatus.WAITING_PAYMENT.getValue()
+                : PaymentStatus.REJECTED.getValue();
+    }
 
-        return PaymentStatus.WAITING_PAYMENT.getValue();
+    private String resolveBankTransferStatus(Map<String, String> paymentData) {
+        return isComplete(paymentData, "bankName", "referenceCode")
+                ? PaymentStatus.WAITING_PAYMENT.getValue()
+                : PaymentStatus.REJECTED.getValue();
+    }
+
+    private boolean isComplete(Map<String, String> paymentData, String firstKey, String secondKey) {
+        return hasNonBlankValue(paymentData, firstKey)
+                && hasNonBlankValue(paymentData, secondKey);
     }
 
     private boolean hasNonBlankValue(Map<String, String> paymentData, String key) {
