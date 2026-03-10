@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Order List</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+          crossorigin="anonymous">
+</head>
+<body>
+<div class="container my-4">
+    <h2>Order List</h2>
+    <p class="text-muted" th:if="${author != null}">
+        Showing orders for <strong th:text="${author}"></strong>
+    </p>
+
+    <table class="table table-striped table-responsive-md">
+        <thead>
+        <tr>
+            <th>Order ID</th>
+            <th>Order Time</th>
+            <th>Author</th>
+            <th>Status</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:if="${orders == null or #lists.isEmpty(orders)}">
+            <td colspan="4" class="text-center text-muted">No orders found</td>
+        </tr>
+        <tr th:each="order : ${orders}">
+            <td th:text="${order.id}"></td>
+            <td th:text="${order.orderTime}"></td>
+            <td th:text="${order.author}"></td>
+            <td th:text="${order.status}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <a th:href="@{/order/history}" class="btn btn-secondary">Back to History Search</a>
+    <a th:href="@{/order/create}" class="btn btn-primary">Create New Order</a>
+</div>
+</body>
+</html>
