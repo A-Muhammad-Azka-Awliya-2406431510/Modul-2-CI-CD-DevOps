@@ -18,6 +18,14 @@ public class PaymentServiceImpl implements PaymentService {
     private static final String METHOD_VOUCHER_CODE = "VOUCHER_CODE";
     private static final String METHOD_CASH_ON_DELIVERY = "CASH_ON_DELIVERY";
     private static final String METHOD_BANK_TRANSFER = "BANK_TRANSFER";
+    private static final String KEY_VOUCHER_CODE = "voucherCode";
+    private static final String KEY_ADDRESS = "address";
+    private static final String KEY_DELIVERY_FEE = "deliveryFee";
+    private static final String KEY_BANK_NAME = "bankName";
+    private static final String KEY_REFERENCE_CODE = "referenceCode";
+    private static final String VOUCHER_PREFIX = "ESHOP";
+    private static final int VOUCHER_LENGTH = 16;
+    private static final int REQUIRED_VOUCHER_DIGIT_COUNT = 8;
 
     private final PaymentRepository paymentRepository;
     private final Map<String, Order> orderByPaymentId = new HashMap<>();
@@ -98,13 +106,13 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     private String resolveCashOnDeliveryStatus(Map<String, String> paymentData) {
-        return isComplete(paymentData, "address", "deliveryFee")
+        return isComplete(paymentData, KEY_ADDRESS, KEY_DELIVERY_FEE)
                 ? PaymentStatus.WAITING_PAYMENT.getValue()
                 : PaymentStatus.REJECTED.getValue();
     }
 
     private String resolveBankTransferStatus(Map<String, String> paymentData) {
-        return isComplete(paymentData, "bankName", "referenceCode")
+        return isComplete(paymentData, KEY_BANK_NAME, KEY_REFERENCE_CODE)
                 ? PaymentStatus.WAITING_PAYMENT.getValue()
                 : PaymentStatus.REJECTED.getValue();
     }
@@ -128,18 +136,27 @@ public class PaymentServiceImpl implements PaymentService {
             return false;
         }
 
-        String voucherCode = paymentData.get("voucherCode");
-        if (voucherCode == null || voucherCode.length() != 16 || !voucherCode.startsWith("ESHOP")) {
+        String voucherCode = paymentData.get(KEY_VOUCHER_CODE);
+        if (!hasValidVoucherStructure(voucherCode)) {
             return false;
         }
 
+        return countDigits(voucherCode) == REQUIRED_VOUCHER_DIGIT_COUNT;
+    }
+
+    private boolean hasValidVoucherStructure(String voucherCode) {
+        return voucherCode != null
+                && voucherCode.length() == VOUCHER_LENGTH
+                && voucherCode.startsWith(VOUCHER_PREFIX);
+    }
+
+    private int countDigits(String text) {
         int numericCount = 0;
-        for (char currentChar : voucherCode.toCharArray()) {
+        for (char currentChar : text.toCharArray()) {
             if (Character.isDigit(currentChar)) {
                 numericCount++;
             }
         }
-
-        return numericCount == 8;
+        return numericCount;
     }
 }
