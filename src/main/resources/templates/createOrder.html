@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Create New Order</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+          crossorigin="anonymous">
+</head>
+<body>
+<div class="container my-4">
+    <h2>Create New Order</h2>
+    <p class="text-muted">Select products and fill your name to create an order.</p>
+
+    <form th:action="@{/order/create}" method="post">
+        <div class="form-group">
+            <label for="authorInput">Author</label>
+            <input id="authorInput"
+                   name="author"
+                   type="text"
+                   class="form-control col-md-6"
+                   placeholder="Enter your name"
+                   required>
+        </div>
+
+        <table class="table table-striped table-responsive-md">
+            <thead>
+            <tr>
+                <th>Pick</th>
+                <th>Product Name</th>
+                <th>Quantity</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${products == null or #lists.isEmpty(products)}">
+                <td colspan="3" class="text-center text-muted">No products available</td>
+            </tr>
+            <tr th:each="product : ${products}">
+                <td>
+                    <input type="checkbox"
+                           name="productIds"
+                           th:value="${product.productId}">
+                </td>
+                <td th:text="${product.productName}"></td>
+                <td th:text="${product.productQuantity}"></td>
+            </tr>
+            </tbody>
+        </table>
+
+        <button id="createOrderButton" type="submit" class="btn btn-primary">Create Order</button>
+        <a th:href="@{/order/history}" class="btn btn-secondary">View Order History</a>
+    </form>
+</div>
+</body>
+</html>

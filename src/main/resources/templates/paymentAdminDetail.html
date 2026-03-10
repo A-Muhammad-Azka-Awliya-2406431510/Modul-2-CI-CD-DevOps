@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Payment Admin Detail</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO"
+          crossorigin="anonymous">
+</head>
+<body>
+<div class="container my-4">
+    <h2>Payment Admin Detail</h2>
+
+    <table class="table table-striped table-responsive-md">
+        <tbody>
+        <tr>
+            <th>Payment ID</th>
+            <td th:text="${payment != null ? payment.id : '-'}"></td>
+        </tr>
+        <tr>
+            <th>Method</th>
+            <td th:text="${payment != null ? payment.method : '-'}"></td>
+        </tr>
+        <tr>
+            <th>Status</th>
+            <td id="paymentStatus" th:text="${payment != null ? payment.status : '-'}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div class="d-flex">
+        <form th:if="${payment != null}"
+              th:action="@{/payment/admin/set-status/{paymentId}(paymentId=${payment.id})}"
+              method="post" class="mr-2">
+            <input type="hidden" name="status" value="SUCCESS">
+            <button id="acceptPaymentButton" type="submit" class="btn btn-success">Accept</button>
+        </form>
+
+        <form th:if="${payment != null}"
+              th:action="@{/payment/admin/set-status/{paymentId}(paymentId=${payment.id})}"
+              method="post">
+            <input type="hidden" name="status" value="REJECTED">
+            <button id="rejectPaymentButton" type="submit" class="btn btn-danger">Reject</button>
+        </form>
+    </div>
+
+    <a th:href="@{/payment/admin/list}" class="btn btn-secondary mt-3">Back to List</a>
+    <a class="btn btn-info mt-3"
+       th:if="${payment != null}"
+       th:href="@{/payment/detail/{paymentId}(paymentId=${payment.id})}">
+        Open User Detail
+    </a>
+</div>
+</body>
+</html>
