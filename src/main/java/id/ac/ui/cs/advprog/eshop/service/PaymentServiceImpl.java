@@ -106,29 +106,33 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     private String resolveCashOnDeliveryStatus(Map<String, String> paymentData) {
-        return isComplete(paymentData, KEY_ADDRESS, KEY_DELIVERY_FEE)
+        return hasRequiredValues(paymentData, KEY_ADDRESS, KEY_DELIVERY_FEE)
                 ? PaymentStatus.WAITING_PAYMENT.getValue()
                 : PaymentStatus.REJECTED.getValue();
     }
 
     private String resolveBankTransferStatus(Map<String, String> paymentData) {
-        return isComplete(paymentData, KEY_BANK_NAME, KEY_REFERENCE_CODE)
+        return hasRequiredValues(paymentData, KEY_BANK_NAME, KEY_REFERENCE_CODE)
                 ? PaymentStatus.WAITING_PAYMENT.getValue()
                 : PaymentStatus.REJECTED.getValue();
     }
 
-    private boolean isComplete(Map<String, String> paymentData, String firstKey, String secondKey) {
-        return hasNonBlankValue(paymentData, firstKey)
-                && hasNonBlankValue(paymentData, secondKey);
-    }
-
-    private boolean hasNonBlankValue(Map<String, String> paymentData, String key) {
+    private boolean hasRequiredValues(Map<String, String> paymentData, String... keys) {
         if (paymentData == null) {
             return false;
         }
 
-        String value = paymentData.get(key);
-        return value != null && !value.isEmpty();
+        for (String key : keys) {
+            if (isNullOrEmpty(paymentData.get(key))) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private boolean isNullOrEmpty(String value) {
+        return value == null || value.isEmpty();
     }
 
     private boolean isValidVoucherCode(Map<String, String> paymentData) {
