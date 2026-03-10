@@ -98,3 +98,13 @@ Dengan pendekatan itu, kode lebih bersih, mengikuti prinsip **DRY**, namun tetap
 - **SRP (Single Responsibility Principle)** : Satu class harus menangani macam kekhawatiran, apalagi jika hanya perubahan kecil.
 
 </details>
+
+## Refleksi (Module 4 - Refactoring & TDD)
+
+<details>
+  <summary><strong>Refleksi 5 (Refactoring &amp; TDD)</strong></summary>
+
+1) Menurut saya, alur TDD di modul ini lumayan membantu karena bikin proses ngoding jadi lebih terarah dan tidak asal langsung implementasi. Dengan bikin test dulu, saya jadi lebih paham apa yang sebenarnya harus dikerjakan, sekaligus lebih cepat sadar kalau ada bagian yang salah. Walaupun begitu, saya juga merasa TDD belum selalu cukup untuk semua kondisi, jadi ke depannya saya tetap perlu lebih teliti memahami requirement dan menambahkan jenis testing lain kalau dibutuhkan.
+2) Kalau dilihat dari prinsip F.I.R.S.T., menurut saya test yang dibuat di tutorial ini sudah cukup oke karena test-nya cepat dijalankan, masing-masing berdiri sendiri, dan hasilnya jelas. Selain itu, test juga dibuat mengikuti alur TDD, jadi terasa nyambung dengan proses pengembangannya. Tapi, saya masih perlu belajar membuat test yang lebih rapi dan lebih lengkap, terutama untuk edge case, supaya test yang saya buat ke depannya tidak cuma benar, tapi juga benar-benar kuat.
+
+</details>
