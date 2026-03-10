@@ -88,6 +88,54 @@ class PaymentServiceImplTest {
     }
 
     @Test
+    void testAddPaymentBankTransferValidDataShouldWaitForConfirmation() {
+        Map<String, String> bankTransferPaymentData = new HashMap<>();
+        bankTransferPaymentData.put("bankName", "BCA");
+        bankTransferPaymentData.put("referenceCode", "VA-123456");
+
+        Payment result = paymentService.addPayment(
+                order,
+                "BANK_TRANSFER",
+                bankTransferPaymentData
+        );
+
+        assertEquals(PaymentStatus.WAITING_PAYMENT.getValue(), result.getStatus());
+        assertEquals(OrderStatus.WAITING_PAYMENT.getValue(), order.getStatus());
+    }
+
+    @Test
+    void testAddPaymentBankTransferWithEmptyBankNameShouldRejectAndFailOrder() {
+        Map<String, String> invalidBankTransferPaymentData = new HashMap<>();
+        invalidBankTransferPaymentData.put("bankName", "");
+        invalidBankTransferPaymentData.put("referenceCode", "VA-123456");
+
+        Payment result = paymentService.addPayment(
+                order,
+                "BANK_TRANSFER",
+                invalidBankTransferPaymentData
+        );
+
+        assertEquals(PaymentStatus.REJECTED.getValue(), result.getStatus());
+        assertEquals(OrderStatus.FAILED.getValue(), order.getStatus());
+    }
+
+    @Test
+    void testAddPaymentBankTransferWithWhitespaceDataShouldStillBeWaiting() {
+        Map<String, String> bankTransferPaymentData = new HashMap<>();
+        bankTransferPaymentData.put("bankName", " ");
+        bankTransferPaymentData.put("referenceCode", " ");
+
+        Payment result = paymentService.addPayment(
+                order,
+                "BANK_TRANSFER",
+                bankTransferPaymentData
+        );
+
+        assertEquals(PaymentStatus.WAITING_PAYMENT.getValue(), result.getStatus());
+        assertEquals(OrderStatus.WAITING_PAYMENT.getValue(), order.getStatus());
+    }
+
+    @Test
     void testSetStatusToSuccess() {
         Payment payment = paymentService.addPayment(
                 order,
